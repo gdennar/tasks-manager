@@ -21,7 +21,7 @@ export default function HeaderProfile() {
 	const [error, setError] = useState("null");
 	const open = Boolean(anchorEl);
 
-	const { logout, user } = useContext(AuthContext);
+	const { logout, currentUser } = useContext(AuthContext);
 
 	const navigate = useNavigate();
 
@@ -44,8 +44,13 @@ export default function HeaderProfile() {
 		}
 	};
 
+	const profileHandler = () => {
+		handleClose();
+		navigate("/profile");
+	};
+
 	return (
-		<div>
+		<div className="profile-container">
 			<Tooltip title="Profile">
 				<Button
 					style={mystyle}
@@ -63,11 +68,12 @@ export default function HeaderProfile() {
 					<span className="icon" style={{ marginRight: "5px" }}>
 						<PersonIcon />
 					</span>
-					<span>Profile</span>
+					<span className="name-icon">{currentUser.email.slice(0, 1)}</span>
 				</Button>
 			</Tooltip>
 			<Menu
 				id="demo-positioned-menu"
+				className="profile-button"
 				aria-labelledby="demo-positioned-button"
 				anchorEl={anchorEl}
 				open={open}
@@ -80,9 +86,11 @@ export default function HeaderProfile() {
 					vertical: "top",
 					horizontal: "left",
 				}}
+				sx={{
+					zIndex: "99",
+				}}
 			>
-				<MenuItem onClick={handleClose}>Profile</MenuItem>
-				<MenuItem onClick={handleClose}>My account</MenuItem>
+				<MenuItem onClick={profileHandler}>Profile</MenuItem>
 				<MenuItem onClick={handleLogout}>Logout</MenuItem>
 			</Menu>
 		</div>

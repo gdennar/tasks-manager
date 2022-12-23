@@ -2,25 +2,29 @@ import React, { useContext, useEffect, useState } from "react";
 import { useResolvedPath } from "react-router-dom";
 import Notes from "../components/Notes";
 import TaskContext from "../store/task-context";
-import { Alert, Grid, Box, Paper, Card } from "@mui/material";
+import { Alert, Grid} from "@mui/material";
 import LoadingSpinner from "../UI/LoadingSpinner";
+import EditTask from "../components/EditTask";
 
 export default function Pending(props) {
 	const [tasks, setTasks] = useState([]);
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState("");
+	const [modalIsShown, setModalIsShown] = useState(false);
+	const [taskId, setTaskId] = useState("");
 
 	const url = useResolvedPath("").pathname;
 
 	const taskCtx = useContext(TaskContext);
 	const getTasks = taskCtx.getPendingTaskHandler;
+	const deleteTasks = taskCtx.deleteTask;
 
 	useEffect(() => {
 		getAllTask();
 	}, []);
 
-	const getAllTask = async () => {
+	const getAllTask = async (uid) => {
 		try {
 			setLoading(true);
 			const docsSnap = await getTasks();
@@ -36,15 +40,20 @@ export default function Pending(props) {
 		setError("");
 	};
 
-	// if (tasks.length === 0) {
-	// 	return (
-	// 		<section className="main-content">
-	// 			<Card>
-	// 				<h3>You have no task pending</h3>
-	// 			</Card>
-	// 		</section>
-	// 	);
-	// }
+	const deleteHandler = async (id) => {
+		try {
+			await deleteTasks(id);
+			getAllTask();
+		} catch (err) {
+			console.log(err.message);
+		}
+	};
+
+	const showModalHandler = (id) => {
+		setTaskId(id);
+		setModalIsShown(true);
+	};
+
 	return (
 		<section className="main-content">
 			{loading ? (
@@ -70,14 +79,27 @@ export default function Pending(props) {
 							return (
 								<Grid item xs={12} sm={6} md={4} lg={3} key={task.id}>
 									<Notes
-										key={task.id}
+										id={task.id}
 										title={task.title}
 										description={task.description}
-										createdAt={task.createdAt}
+										label={task.status === "pending" && "in progress"}
+										secondLabel={task.status === "pending" && "completed"}
+										createdAt={new Date(
+											task.createdAt.seconds * 1000
+										).toLocaleDateString("en-US")}
+										onDelete={deleteHandler.bind(null, task.id)}
+										onShowModal={showModalHandler.bind(null, task.id)}
+										setTaskId={setTaskId}
 									></Notes>
 								</Grid>
 							);
 						})}
+						<EditTask
+							open={modalIsShown}
+							close={() => setModalIsShown(false)}
+							id={taskId}
+							setTaskId={setTaskId}
+						/>
 					</Grid>
 				</div>
 			)}

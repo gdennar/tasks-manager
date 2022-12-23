@@ -4,6 +4,9 @@ import {
 	signInWithEmailAndPassword,
 	sendPasswordResetEmail,
 	onAuthStateChanged,
+	updatePassword,
+	updateEmail,
+	updateProfile,
 	signOut,
 } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
@@ -20,8 +23,8 @@ const AuthContext = React.createContext({
 let successResponse;
 let errorResponse;
 export const AuthContextProvider = (props) => {
-	const [currentUser, setCurrentUser] = useState();
-	const [isError, setIsError] = useState();
+	const [currentUser, setCurrentUser] = useState(null);
+	const [isError, setIsError] = useState("");
 
 	async function signUp(name, email, password) {
 		try {
@@ -32,8 +35,9 @@ export const AuthContextProvider = (props) => {
 				displayName: name || null,
 				email: user.email || null,
 			});
-			console.log(name);
-			console.log(user);
+			await user.updateProfile({
+				displayName: user.displayName,
+			});
 		} catch (error) {
 			const errorMessage = error.message;
 			setIsError(errorMessage || "Authentication falied");
@@ -47,12 +51,11 @@ export const AuthContextProvider = (props) => {
 			const res = await signInWithEmailAndPassword(auth, email, password);
 			const user = res.user;
 			console.log(user);
-		} catch (error) {
-			const errorMessage = error.message;
-			setIsError(errorMessage || "Authentication falied");
-			console.log(errorMessage);
-			setIsError("");
+		} catch (err) {
+			console.log(err);
+			setIsError(err.message);
 		}
+		setIsError("");
 	}
 
 	async function reset(email) {
@@ -75,12 +78,33 @@ export const AuthContextProvider = (props) => {
 		}
 	}
 
+	async function updateEmailHandler(email) {
+		try {
+			await updateEmail(auth.currentUser, email);
+		} catch (error) {
+			const errorMessage = error.message;
+			setIsError(errorMessage || "Failed to update, try again");
+		}
+	}
+
+	async function updatePasswordHandler(password) {
+		try {
+			await updatePassword(auth.currentUser, password);
+		} catch (error) {
+			const errorMessage = error.message;
+			setIsError(errorMessage || "Failed to log out, try again");
+		}
+	}
+
 	useEffect(() => {
 		const unsubsrcibe = onAuthStateChanged(auth, (user) => {
+			if (!user) {
+				setCurrentUser(null);
+				return;
+			}
+			setCurrentUser(user);
 			if (user) {
 				const uid = user.uid;
-				setCurrentUser(user);
-				console.log(user);
 				console.log(uid);
 			}
 		});
@@ -99,6 +123,8 @@ export const AuthContextProvider = (props) => {
 		login,
 		logout,
 		setIsError,
+		updateEmailHandler,
+		updatePasswordHandler,
 	};
 
 	return (

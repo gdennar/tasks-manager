@@ -54,13 +54,12 @@ const TaskForm = (props) => {
 			if (taskInput.status === "pending" || taskInput.status === "none") {
 				navigate("/pending");
 			} else if (taskInput.status === "in progress") {
-				navigate("/in-progress");
+				navigate("/progress");
 			} else if (taskInput.status === "completed") {
 				navigate("/completed");
 			} else {
 				navigate("/dashboard");
 			}
-			console.log(taskInput.status);
 		} catch (err) {
 			setMessage({ error: true, msg: err.message });
 		}

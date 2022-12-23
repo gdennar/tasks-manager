@@ -1,8 +1,22 @@
-import * as React from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
-import { capitalize, Tooltip } from "@mui/material";
-import { Checkbox, Typography, IconButton, Grid, Paper } from "@mui/material";
+import {
+	capitalize,
+	Checkbox,
+	getSkeletonUtilityClass,
+	Tooltip,
+} from "@mui/material";
+import {
+	Radio,
+	Typography,
+	IconButton,
+	Grid,
+	Paper,
+	Button,
+} from "@mui/material";
 import { Menu, MenuItem, ListItemIcon, FormControlLabel } from "@mui/material";
+import TaskContext from "../store/task-context";
+import AuthContext from "../store/auth-context";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -13,16 +27,70 @@ import {
 	CardContent,
 	Divider,
 } from "@mui/material";
+import { serverTimestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import "./Notes.css";
+import InProgress from "../pages/InProgress";
 
-export function Note(props) {
-	const [anchorEl, setAnchorEl] = React.useState(null);
+export default function Notes(props) {
+	const { label, secondLabel } = props;
+	const [progress, setProgress] = useState(label);
+	const [secondProgress, setSecondProgress] = useState(secondLabel);
+
+	const [anchorEl, setAnchorEl] = useState(null);
+
+	
+
+	const taskCtx = useContext(TaskContext);
+	const getTasks = taskCtx.getAllTaskHandler;
+	const updateTask = taskCtx.updateTask;
+
+	const navigate = useNavigate();
+
 	const open = Boolean(anchorEl);
+
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
 	};
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+
+	const handlefirstLabel = (e) => {
+		setProgress(e.target.value);
+		if (props.id !== undefined && props.id !== "") {
+			updateHandler();
+		}
+	};
+
+	const handleSecondLabel = (e) => {
+		setSecondProgress(e.target.value);
+		if (props.id !== undefined && props.id !== "") {
+			updateHandler();
+		}
+	};
+
+	const updateHandler = async (e) => {
+		let taskInput = {
+			status: progress || secondProgress,
+			createdAt: serverTimestamp(),
+		};
+
+		try {
+			await getTasks(props.id);
+			await updateTask(props.id, taskInput);
+			if (taskInput.status === "pending" || taskInput.status === "none") {
+				navigate("/pending");
+			} else if (taskInput.status === "in progress") {
+				navigate("/progress");
+			} else if (taskInput.status === "completed") {
+				navigate("/completed");
+			} else {
+				navigate("/dashboard");
+			}
+		} catch (err) {
+			console.log(err.message);
+		}
 	};
 
 	return (
@@ -49,7 +117,7 @@ export function Note(props) {
 					}
 					subheader={
 						<Typography sx={{ fontSize: 14 }} color="#fff" gutterBottom>
-							September 11, 2022
+							{props.createdAt}
 						</Typography>
 					}
 				></CardHeader>
@@ -70,17 +138,25 @@ export function Note(props) {
 						<FormControlLabel
 							className="note-form"
 							sx={{ "& .MuiSvgIcon-root": { fontSize: 13 } }}
-							value=""
 							control={<Checkbox />}
-							label="in-progress"
+							label={label}
+							name="status"
+							value={label}
+							onChange={handlefirstLabel}
 						/>
-						<FormControlLabel
-							className="note-form"
-							sx={{ "& .MuiSvgIcon-root": { fontSize: 13 } }}
-							value=""
-							control={<Checkbox />}
-							label="completed"
-						/>
+						{secondLabel !== "" ? (
+							<FormControlLabel
+								className="note-form"
+								sx={{ "& .MuiSvgIcon-root": { fontSize: 13 } }}
+								control={<Checkbox />}
+								label={secondLabel}
+								name="status2"
+								value={secondLabel}
+								onChange={handleSecondLabel}
+							/>
+						) : (
+							""
+						)}
 					</form>
 				</div>
 
@@ -132,13 +208,14 @@ export function Note(props) {
 						transformOrigin={{ horizontal: "right", vertical: "top" }}
 						anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
 					>
-						<MenuItem>
+						<MenuItem onClick={props.onShowModal}>
 							<ListItemIcon>
 								<EditIcon fontSize="small" />
 							</ListItemIcon>
 							Edit
 						</MenuItem>
-						<MenuItem>
+
+						<MenuItem onClick={props.onDelete}>
 							<ListItemIcon>
 								<DeleteIcon fontSize="small" />
 							</ListItemIcon>
@@ -148,15 +225,5 @@ export function Note(props) {
 				</div>
 			</CardActions>
 		</Card>
-	);
-}
-
-export default function Notes(props) {
-	return (
-		<Note
-			title={props.title}
-			description={props.description}
-			createdAt={props.createdAt}
-		/>
 	);
 }

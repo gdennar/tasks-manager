@@ -4,7 +4,6 @@ import Input from "../UI/Input";
 import { Link, useNavigate } from "react-router-dom";
 import "../components/AuthForm.css";
 import AuthContext from "../store/auth-context";
-import LoadingSpinner from "../UI/LoadingSpinner";
 import { useRef } from "react";
 
 const Login = () => {
@@ -14,7 +13,7 @@ const Login = () => {
 
 	const navigate = useNavigate();
 
-	const { login, currentUser, isError } = useContext(AuthContext);
+	const { login, currentUser, isError, setIsError } = useContext(AuthContext);
 
 	const loginHandler = async (e) => {
 		e.preventDefault();
@@ -25,13 +24,12 @@ const Login = () => {
 		const enteredPasswordInputRef = passwordInputRef.current.value;
 
 		await login(enteredEmailInputRef, enteredPasswordInputRef);
-		if (currentUser !== null) {
-			navigate("/dashboard");
-			console.log("log in");
-		}
 
-		console.log(enteredEmailInputRef, enteredPasswordInputRef);
+		navigate("/dashboard");
+
 		setIsLoading(false);
+
+		console.log(currentUser);
 	};
 
 	return (
@@ -70,6 +68,7 @@ const Login = () => {
 						<div className="auth-btn">
 							<Button
 								onClick={loginHandler}
+								disabled={isLoading}
 								type="submit"
 								variant="contained"
 								sx={{
@@ -81,7 +80,7 @@ const Login = () => {
 									},
 								}}
 							>
-								{isLoading ? "Loggin you in .." : "LOGIN"}
+								{isLoading ? "Loggin in..." : "LOGIN"}
 							</Button>
 						</div>
 
@@ -90,6 +89,13 @@ const Login = () => {
 							<span>
 								<Link to="/sign-up" style={{ color: "#fff" }}>
 									SIGN UP
+								</Link>
+							</span>
+						</div>
+						<div className="auth-text">
+							<span>
+								<Link to="/forgot-password" style={{ color: "#fff" }}>
+									Forgot Password?
 								</Link>
 							</span>
 						</div>

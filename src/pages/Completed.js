@@ -1,24 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useResolvedPath } from "react-router-dom";
-import { Alert, Card } from "@mui/material";
-import { Link, matchPath } from "react-router-dom";
+import { Alert } from "@mui/material";
 import TaskContext from "../store/task-context";
-import AuthContext from "../store/auth-context";
 import Notes from "../components/Notes";
 import Grid from "@mui/material/Grid";
 import LoadingSpinner from "../UI/LoadingSpinner";
+import EditTask from "../components/EditTask";
 
 const Completed = () => {
 	const [tasks, setTasks] = useState([]);
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState("");
+	const [modalIsShown, setModalIsShown] = useState(false);
+	const [taskId, setTaskId] = useState("");
 
 	const taskCtx = useContext(TaskContext);
 	const getTasks = taskCtx.getCompletedTaskHandler;
-
-	const authCtx = useContext(AuthContext);
-	const user = authCtx.currentUser;
+	const deleteTasks = taskCtx.deleteTask;
 
 	const url = useResolvedPath("").pathname;
 
@@ -26,13 +25,12 @@ const Completed = () => {
 		getAllTask();
 	}, []);
 
-	const getAllTask = async (uid) => {
+	const getAllTask = async () => {
 		try {
 			setLoading(true);
 			const docsSnap = await getTasks();
 
 			setTasks(docsSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
 			if (docsSnap.empty) {
 				setMessage("You have no completed task");
 			}
@@ -42,6 +40,22 @@ const Completed = () => {
 			setError(err.message);
 		}
 		setError("");
+	};
+
+	const deleteHandler = async (id) => {
+		try {
+			await deleteTasks(id);
+			getAllTask();
+		} catch (err) {
+			setError("Oops! try again");
+			setError("");
+			console.log(err.message);
+		}
+	};
+
+	const showModalHandler = (id) => {
+		setTaskId(id);
+		setModalIsShown(true);
 	};
 
 	return (
@@ -57,26 +71,42 @@ const Completed = () => {
 							{error}
 						</Alert>
 					) : (
-						<p className="url-path">{url}</p>
+						<div>
+							<p className="url-path">{url}</p>
+						</div>
 					)}
 					{message && (
-						<Alert severity="warning" className="centered" sx={{ mt: "1rem" }}>
+						<Alert severity="info" className="centered" sx={{ mt: "1rem" }}>
 							{message}
 						</Alert>
 					)}
 					<Grid container spacing={2} p={2} className="task-content">
 						{tasks.map((task) => {
+							console.log(task.uid);
 							return (
 								<Grid item xs={12} sm={6} md={3} key={task.id}>
 									<Notes
-										key={task.id}
+										id={task.id}
 										title={task.title}
 										description={task.description}
-										createdAt={task.createdAt}
+										label={task.status === "completed" && "Nice Job!"}
+										secondLabel={task.status === "completed" && ""}
+										createdAt={new Date(
+											task.createdAt.seconds * 1000
+										).toLocaleDateString("en-US")}
+										onDelete={deleteHandler.bind(null, task.id)}
+										onShowModal={showModalHandler.bind(null, task.id)}
+										setTaskId={setTaskId}
 									></Notes>
 								</Grid>
 							);
 						})}
+						<EditTask
+							open={modalIsShown}
+							close={() => setModalIsShown(false)}
+							id={taskId}
+							setTaskId={setTaskId}
+						/>
 					</Grid>
 				</div>
 			)}

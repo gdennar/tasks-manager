@@ -1,16 +1,17 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 import {
 	collection,
 	addDoc,
 	getDoc,
 	getDocs,
-	setDoc,
 	updateDoc,
 	deleteDoc,
 	doc,
 	where,
 	query,
+	orderBy,
 } from "firebase/firestore";
+import AuthContext from "../store/auth-context";
 import { db } from "../firebase-config";
 
 const TaskContext = createContext({
@@ -28,16 +29,23 @@ export const TaskContextProvider = ({ children }) => {
 	const [countCompleted, setCountCompleted] = useState("");
 	const [countPending, setCountPending] = useState("");
 	const [countProgress, setCountProgress] = useState("");
+
 	const taskCollectionRef = collection(db, "tasks");
 
 	const completed = query(
 		taskCollectionRef,
 		where("status", "==", "completed")
+		// orderBy("createdAt", "desc")
 	);
-	const pending = query(taskCollectionRef, where("status", "==", "pending"));
+	const pending = query(
+		taskCollectionRef,
+		where("status", "==", "pending")
+		// orderBy("createdAt", "desc")
+	);
 	const inProgress = query(
 		taskCollectionRef,
 		where("status", "==", "in progress")
+		// orderBy("createdAt", "desc")
 	);
 
 	const addTaskHandler = (taskInput) => {
@@ -49,13 +57,18 @@ export const TaskContextProvider = ({ children }) => {
 		return updateDoc(taskDoc, taskInput);
 	};
 
-	const deleteTaskHandler = (id) => {
+	const deleteTaskHandler = async (id) => {
 		const taskDoc = doc(db, "tasks", id);
 		return deleteDoc(taskDoc);
 	};
 
 	const deleteAllTaskHandler = (taskInput) => {
 		return db.remove();
+	};
+
+	const getAllTaskHandler = (id) => {
+		const taskDoc = doc(db, "tasks", id);
+		return getDoc(taskDoc);
 	};
 
 	const getCompletedTaskHandler = async () => {
@@ -86,6 +99,7 @@ export const TaskContextProvider = ({ children }) => {
 		getCompletedTaskHandler,
 		getInProgressTaskHandler,
 		getPendingTaskHandler,
+		getAllTaskHandler,
 		editTask: editTaskHandler,
 		taskCollectionRef,
 		countCompleted,

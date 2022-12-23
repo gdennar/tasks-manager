@@ -1,5 +1,5 @@
 import { Outlet, Route, Routes } from "react-router-dom";
-import React, { useContext } from "react";
+import React, { useContext, Suspense } from "react";
 import AuthContext from "./store/auth-context";
 import Header from "./components/Header";
 import SideBar from "./components/SideBar";
@@ -11,10 +11,15 @@ import Progress from "./pages/InProgress";
 import Pending from "./pages/Pending";
 import Report from "./pages/Report";
 import AddTask from "./pages/AddTask";
+import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
 	const authCtx = useContext(AuthContext);
 	const isLoggedIn = authCtx.currentUser;
+
+	// const OptimizeTasks = React.lazy(() => import("./pages/Dashboard"));
 
 	return (
 		<>
@@ -24,12 +29,63 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Login />} />
 					<Route path="/sign-up" element={<SignUp />} />
-					<Route path="/add-task" element={<AddTask />} />
-					<Route path="/dashboard" element={<Dashboard />} />
-					<Route path="/pending" element={<Pending />} />
-					<Route path="/progress" element={<Progress />} />
-					<Route path="/completed" element={<Completed />} />
-					<Route path="/report" element={<Report />} />
+					<Route
+						path="/add-task"
+						element={
+							<ProtectedRoute>
+								<AddTask />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/profile"
+						element={
+							<ProtectedRoute>
+								<Profile />
+							</ProtectedRoute>
+						}
+					/>
+					<Route path="/forgot-password" element={<ForgotPassword />} />
+					<Route
+						path="/dashboard"
+						element={
+							<ProtectedRoute>
+								<Dashboard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/pending"
+						element={
+							<ProtectedRoute>
+								<Pending />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/progress"
+						element={
+							<ProtectedRoute>
+								<Progress />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/completed"
+						element={
+							<ProtectedRoute>
+								<Completed />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/report"
+						element={
+							<ProtectedRoute>
+								<Report />
+							</ProtectedRoute>
+						}
+					/>
 				</Routes>
 			</main>
 		</>

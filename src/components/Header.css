@@ -37,10 +37,17 @@
 	list-style-type: none;
 }
 
-.navBtn {
+.nav-btn {
 	font-weight: 600;
-
-	border-radius: 25px;
 	margin-right: 50px;
 	text-decoration: none;
+}
+
+.navv-btn {
+	font-weight: 700 !important;
+	margin-right: 50px;
+	text-decoration: none;
+	background-color: #fff !important;
+	color: #06283d !important;
+	border: 2px dotted #06283d !important;
 }

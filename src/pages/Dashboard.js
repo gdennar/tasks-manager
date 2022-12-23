@@ -1,5 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useContext } from "react";
 import { useResolvedPath } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import TaskContext from "../store/task-context";
@@ -7,7 +6,6 @@ import StartIcon from "@mui/icons-material/Start";
 import PendingIcon from "@mui/icons-material/Pending";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
 import { Paper } from "@mui/material";
-import useBasic from "../hooks/use-basic";
 
 export default function Dashboard() {
 	const taskCtx = useContext(TaskContext);

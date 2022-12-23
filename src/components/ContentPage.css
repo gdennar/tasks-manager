@@ -92,3 +92,30 @@
 	font-size: 2rem;
 	color: #00abb3;
 }
+
+.profile-container {
+	position: relative;
+}
+
+.profile-button {
+	position: absolute !important;
+	top: 50px !important;
+	z-index: 9999;
+}
+
+.profile-button:hover {
+	z-index: 9999;
+}
+
+.name-icon {
+	background-color: #fa221e;
+	color: #fff;
+	width: 35px;
+	height: 35px;
+	font-size: 1.2rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	padding: 10px;
+}

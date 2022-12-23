@@ -5,8 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import "../components/AuthForm.css";
 import AuthContext from "../store/auth-context";
 import LoadingSpinner from "../UI/LoadingSpinner";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase-config";
 
 const SignUp = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +18,7 @@ const SignUp = () => {
 
 	const onSubmitHandler = async (event) => {
 		event.preventDefault();
-		console.log("hey");
+
 		setIsLoading(true);
 		await signUp(
 			nameInputRef.current.value,
@@ -28,17 +26,9 @@ const SignUp = () => {
 			passwordInputRef.current.value
 		);
 
-		console.log("hey2");
 		setIsLoading(false);
-		if (currentUser) {
-			navigate("/");
-		} else {
-			return;
-		}
-		console.log("hey3");
 
-		console.log(currentUser.uid);
-		console.log(currentUser.accessToken);
+		navigate("/");
 	};
 
 	return (

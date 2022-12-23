@@ -1,7 +1,7 @@
-.wrapper {
+/* .wrapper {
 	width: 100vw;
 	height: calc(100vh - 13rem);
-}
+} */
 
 .form-container {
 	display: block;
@@ -24,6 +24,10 @@
 	background-color: #06283d;
 }
 
+.form.profile {
+	background-color: rgba(193, 208, 219, 0.288);
+}
+
 .control {
 	margin-bottom: 0.5rem;
 }
@@ -44,6 +48,13 @@
 	margin-bottom: 20px;
 }
 
+.control.profile input {
+	width: 25rem;
+}
+
+.control.profile label {
+	color: #06283d;
+}
 .auth-btn,
 .auth-text {
 	display: flex;
@@ -68,5 +79,3 @@
 	font-size: 2rem;
 	padding-bottom: 1rem;
 }
-
-

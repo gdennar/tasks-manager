@@ -1,24 +1,25 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useResolvedPath } from "react-router-dom";
 import Content from "../components/ContentPage";
-import { Alert, Card } from "@mui/material";
+import { Alert } from "@mui/material";
 import LoadingSpinner from "../UI/LoadingSpinner";
 import Grid from "@mui/material/Grid";
 import TaskContext from "../store/task-context";
-import AuthContext from "../store/auth-context";
 import Notes from "../components/Notes";
+import EditTask from "../components/EditTask";
 
 const InProgress = () => {
 	const [tasks, setTasks] = useState([]);
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState("");
+	const [modalIsShown, setModalIsShown] = useState(false);
+	const [taskId, setTaskId] = useState("");
 
 	const taskCtx = useContext(TaskContext);
 	const getTasks = taskCtx.getInProgressTaskHandler;
+	const deleteTasks = taskCtx.deleteTask;
 
-	const authCtx = useContext(AuthContext);
-	const user = authCtx.currentUser;
 
 	const url = useResolvedPath("").pathname;
 
@@ -41,6 +42,19 @@ const InProgress = () => {
 		setError("");
 	};
 
+	const deleteHandler = async (id) => {
+		try {
+			await deleteTasks(id);
+			getAllTask();
+		} catch (err) {
+			console.log(err.message);
+		}
+	};
+
+	const showModalHandler = (id) => {
+		setTaskId(id);
+		setModalIsShown(true);
+	};
 	return (
 		<section className="main-content">
 			{loading ? (
@@ -66,15 +80,28 @@ const InProgress = () => {
 							return (
 								<Grid item xs={12} sm={6} md={3} key={task.id}>
 									<Notes
-										key={task.id}
+										id={task.id}
 										title={task.title}
 										description={task.description}
-										createdAt={task.createdAt}
+										label={task.status === "in progress" ? "completed" : ""}
+										secondLabel={task.status === "in progress" && ""}
+										createdAt={new Date(
+											task.createdAt.seconds * 1000
+										).toLocaleDateString("en-US")}
+										onDelete={deleteHandler.bind(null, task.id)}
+										onShowModal={showModalHandler.bind(null, task.id)}
+										setTaskId={setTaskId}
 									></Notes>
 								</Grid>
 							);
 						})}
 					</Grid>
+					<EditTask
+						open={modalIsShown}
+						close={() => setModalIsShown(false)}
+						id={taskId}
+						setTaskId={setTaskId}
+					/>
 				</div>
 			)}
 		</section>

@@ -19,7 +19,7 @@ const Header = (props) => {
 						{isLoggedIn && (
 							<li>
 								<Link to="/add-task" className="nav-btn">
-									<ModalButton name="New Task" />
+									<ModalButton className="navv-btn" name="New Task" />
 								</Link>
 							</li>
 						)}
