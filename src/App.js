@@ -1,5 +1,5 @@
 import { Outlet, Route, Routes } from "react-router-dom";
-import React, { useContext, Suspense } from "react";
+import React, { useContext, Suspense, useState } from "react";
 import AuthContext from "./store/auth-context";
 import Header from "./components/Header";
 import SideBar from "./components/SideBar";
@@ -13,18 +13,33 @@ import Report from "./pages/Report";
 import AddTask from "./pages/AddTask";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
+import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+	const [showSideBar, setShowSideBar] = useState(true);
+
 	const authCtx = useContext(AuthContext);
 	const isLoggedIn = authCtx.currentUser;
+
+	const handleOpenSideBar = () => {
+		setShowSideBar(!showSideBar);
+	};
+
+	const handleCloseSideBar = () => {
+		setShowSideBar(!showSideBar);
+	};
 
 	// const OptimizeTasks = React.lazy(() => import("./pages/Dashboard"));
 
 	return (
 		<>
-			<Header />
-			{isLoggedIn ? <SideBar /> : ""}
+			<Header onMenuClick={handleOpenSideBar} showSideBar={showSideBar} />
+			{isLoggedIn ? (
+				<SideBar open={showSideBar} onMenuClicks={handleCloseSideBar} />
+			) : (
+				""
+			)}
 			<main>
 				<Routes>
 					<Route path="/" element={<Login />} />
@@ -88,6 +103,7 @@ function App() {
 					/>
 				</Routes>
 			</main>
+			<Footer />
 		</>
 	);
 }

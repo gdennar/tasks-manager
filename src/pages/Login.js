@@ -13,8 +13,13 @@ const Login = () => {
 
 	const navigate = useNavigate();
 
-	const { login, currentUser, isError, setIsError } = useContext(AuthContext);
+	const authCtx = useContext(AuthContext);
+	const isLoggedIn = authCtx.currentUser;
+	const login = authCtx.login;
+	const isError = authCtx.isError;
 
+	// const { login, currentUser, isError, setIsError } = useContext(AuthContext);
+	console.log(isLoggedIn);
 	const loginHandler = async (e) => {
 		e.preventDefault();
 
@@ -26,10 +31,7 @@ const Login = () => {
 		await login(enteredEmailInputRef, enteredPasswordInputRef);
 
 		navigate("/dashboard");
-
 		setIsLoading(false);
-
-		console.log(currentUser);
 	};
 
 	return (

@@ -1,12 +1,16 @@
 .main-content {
-	width: calc(100vw - 270px);
-	height: calc(100vh - 5rem);
-	position: relative;
-	top: 80px;
-	left: 270px;
+	width: 100vw;
+	height: calc(100vh - 2rem);
+	/* position: relative;
+	top: 80px; */
+
 	background-color: rgba(193, 208, 219, 0.288);
-	padding-top: 40px;
+	padding-top: 90px;
 	overflow-y: scroll;
+}
+
+.wrapper {
+	height: calc(100vh - 15rem);
 }
 
 .main-content .url-path {
@@ -118,4 +122,19 @@
 	justify-content: center;
 	border-radius: 50%;
 	padding: 10px;
+}
+
+@media screen and (max-width: 725px) {
+	.main-content {
+		width: 100vw;
+		position: relative;
+		top: 80px;
+		left: 0;
+	}
+
+	.name-icon {
+		width: 20px;
+		height: 20px;
+		font-size: 1rem;
+	}
 }

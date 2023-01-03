@@ -3,17 +3,26 @@ import AuthContext from "../store/auth-context";
 import { NavLink, Link } from "react-router-dom";
 import HeaderProfile from "./HeaderProfile";
 import ModalButton from "../UI/ModalButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 
 import "./Header.css";
 
-const Header = (props) => {
+const Header = ({ onMenuClick, showSideBar }) => {
 	const authCtx = useContext(AuthContext);
 	const isLoggedIn = authCtx.currentUser;
 	const classes = `${"header-login"} ${!isLoggedIn && "header-logout"}`;
+	const menu = `${"menu"} ${!isLoggedIn && "menu-out"}`;
 	return (
 		<>
 			<header className={classes}>
-				<div className="logo">Tasks Manger</div>
+				<div className="logo">
+					<span className={menu} onClick={onMenuClick}>
+						{!showSideBar && <MenuIcon />}
+						{showSideBar && <CloseIcon />}
+					</span>
+					Tasks Manger
+				</div>
 				<nav>
 					<ul className="navItems">
 						{isLoggedIn && (

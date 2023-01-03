@@ -24,6 +24,15 @@
 	position: relative;
 }
 
+.menu {
+	display: inline;
+	padding-right: 10px;
+	font-size: 1.5rem;
+}
+
+.menu-out {
+	display: none;
+}
 .logo {
 	font-size: 2rem;
 	font-weight: 500;
@@ -50,4 +59,21 @@
 	background-color: #fff !important;
 	color: #06283d !important;
 	border: 2px dotted #06283d !important;
+}
+
+@media screen and (max-width: 725px) {
+	.logo {
+		font-size: 1.5rem;
+		font-weight: 300;
+	}
+
+	.menu {
+		display: inline;
+		padding-right: 10px;
+		font-size: 1.2rem;
+	}
+
+	.nav-btn {
+		margin-right: 0px;
+	}
 }

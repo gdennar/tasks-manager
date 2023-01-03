@@ -7,7 +7,7 @@ import PendingIcon from "@mui/icons-material/Pending";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
 import { Paper } from "@mui/material";
 
-export default function Dashboard() {
+export default function Dashboard(props) {
 	const taskCtx = useContext(TaskContext);
 
 	useEffect(() => {
@@ -22,7 +22,7 @@ export default function Dashboard() {
 	const url = useResolvedPath("").pathname;
 
 	return (
-		<section className="main-content">
+		<section className="main-content" close={props.close}>
 			<p className="url-path">{url}</p>
 
 			<Grid container spacing={2} p={2}>
